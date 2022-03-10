@@ -20,7 +20,7 @@ function callRequestProduct() {
   var urlparam;
   var base_path;
   var data = scriptProperties.getProperties();
-  Logger.log(JSON.stringify(data));
+  //Logger.log(JSON.stringify(data));
   for (var key in data) {
     if (key == "client_id") client_id = data[key]
     if (key == "client_secret") client_secret = data[key]
