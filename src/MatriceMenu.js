@@ -4,6 +4,6 @@ function onOpen() {
     .createMenu('Matrice')
     .addItem('📗 Enrichir la matrice', 'sendEnrichmentRequest')
     .addItem('🔁 Synchroniser les navigations', 'synchroNavigation')
-    .addItem('🍣 Synchroniser les produits', 'synchroProduit')
+    .addItem('🍣 Synchroniser les produits', 'synchroProduct')
     .addToUi();
 }

@@ -1,18 +1,61 @@
 // triggers parsing and displays results in a text area inside a custom modal window
 function sendEnrichmentRequest() {
-  var url = "https://x-api-sales-workflow-dev.ir-e1.eu1.cloudhub.io/sale_matrices/" + SpreadsheetApp.getActiveSpreadsheet().getId() + "/sale_items/sync_history";
+
+  setGlobalPropeties();
+  
+  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  var documentProperties = PropertiesService.getDocumentProperties();
+  
+  // set Properties variable
+  var clientId = documentProperties.getProperty("client_id");
+  var clientSecret = documentProperties.getProperty("client_secret");
+  var urlParam = documentProperties.getProperty("SERVER_URL_SALE");
+  var basePath = documentProperties.getProperty("BASE_PATH_SALE_ITEMS_SYNC_HIST");
+
+  var messageText = "";
+  var errorTypeDesc = "";
+  var ui = SpreadsheetApp.getUi();
+
+  var url = urlParam + SpreadsheetApp.getActiveSpreadsheet().getId() + basePath;
   var options = {
     "method": "post",
     "headers": {
       "Content-Type": "application/json",
-      "client_id": "219774f6c1fc4ebabcfafc0e8e138ac8",
-      "client_secret": "1b508B7da8364289A6f835a233cEfB7C"
+      "client_id": clientId,
+      "client_secret": clientSecret
     },
-    "payload": makeJson(), 
+    "payload": makeJson(),
     "muteHttpExceptions": true
   };
+
   var response = UrlFetchApp.fetch(url, options);
-  console.log(response);
+  var codeResult = Number(response.getResponseCode());
+
+  if (codeResult === 200) {
+    spreadsheet.toast("L'enrichissement de la matrice a été éffectuée avec succès")
+    ui.alert(
+      '🗸 Succès',
+      "L'enrichissement de la matrice a été éffectuée avec succès",
+      ui.ButtonSet.OK);
+  }
+  else {
+    var messageContent = JSON.parse(response.getContentText());
+    if (!isObjEmpty(messageContent)) {
+      if (!isObjEmpty(messageContent.error)) {
+        var type = messageContent.error[0].type;
+        errorTypeDesc = '📛 Erreur ' + ': ' + type + ' (' + codeResult + ')';
+        if (type === "HTTP:BAD_REQUEST") {  messageText = 'MESSAGE : ' + messageContent.error[0].message + '\n' + '\n' + 'DESCRIPTION : ' + messageContent.error[0].description[0].type + '\n' + messageContent.error[0].description[0].message + '\n' +  messageContent.error[0].description[0].description; }
+        if (type === "HTTP:INTERNAL_SERVER_ERROR") { messageText = 'MESSAGE : ' + messageContent.error[0].message; }
+        if (type === "APIKIT:BAD_REQUEST") { messageText = 'MESSAGE : ' + messageContent.error[0].message; }
+        if (type === "FUNCTIONNAL:BAD_REQUEST") { messageText = 'MESSAGE : ' + messageContent.error[0].message + + '\n' + '\n' + 'DESCRIPTION : ' + messageContent.error[0].description; }
+
+        ui.alert(
+          errorTypeDesc,
+          messageText,
+          ui.ButtonSet.OK);
+      }
+    }
+  }
 };
 
 function makeJson() {
@@ -50,7 +93,6 @@ function makeJson() {
     recipient: Session.getActiveUser().getEmail(),
     channel: "slack"
   }
-
   const sale = new Sale(
     String(spreadsheet.getSheetByName("Vente").getRange(2, 1).getValue()),
     String(spreadsheet.getSheetByName("Vente").getRange(2, 2).getValue()), // date_start

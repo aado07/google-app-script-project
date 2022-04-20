@@ -5,12 +5,11 @@ class MatrixEnrichementRequest {
     this.sale = sale
     this.sale_item = saleItems
   }
-  
+
   addRecipient(recipient, channel) {
     this.recipients.push({ recipient: recipient, channel: channel })
   }
 }
-
 class SyncNavigationEnrichementRequest {
   constructor(recipient, sale, items) {
     this.recipient = []
@@ -49,23 +48,15 @@ class NavigationItems {
 
 
 class ProductsItems {
-  constructor(isActive, typeProduit,suggestedItem,position,categoryNames, categories, condition, name,supplierReference, manufacturerReference, ean, brand, quantity, wholesalePrice, discountedPrice,
- ecotax, publicPrice, taxRate, reparability_index_grade, reparability_index_mandatory, reparability_index_criteria_grid, depth, width, height, weight, short_description, long_description, images, selling_points, features, specificities, pictograms, warranty, videos, packaging, size_guide, bundleComposition,default_variant_ean13, variantAttributes) {
+  constructor(isActive, typeProduit, suggestedItem, position, categoryNames, categoriesList, condition, name, supplierReference, manufacturerReference, ean, brand, quantity, wholesalePrice, discountedPrice,
+    ecotax, publicPrice, taxRate, reparabilityIndexGrade, reparabilityIndexMandatory, reparabilityIndexCriteriaGrid, depth, width, height, weight, shortDescription, longDescription, imagesList, sellingPointsList, features, specificities, pictograms, warranty, videosList, packaging, sizeGuide, bundleCompositionList, defaultVariantEan13, variantAttributesList) {
+
     this.is_active = isActive
     this.type = typeProduit
-    this.suggested_items = []
-    if (suggestedItem != ""){
-      this.suggested_items.push(suggestedItem)
-    }
+    this.suggested_items = suggestedItem
     this.position = position
-    this.category_names = []
-    for (var h = 0; h < categoryNames.length; ++h) {
-      this.category_names.push(categoryNames[h])
-    }
-    this.categories = []
-      for (var i = 0; i < categories.length; ++i) {
-      this.categories.push(categories[i])
-    }   
+    this.category_names = categoryNames
+    this.categories = categoriesList
     this.condition = condition
     this.name = name
     this.supplier_reference = supplierReference
@@ -78,66 +69,53 @@ class ProductsItems {
     this.ecotax = ecotax
     this.public_price = publicPrice
     this.tax_rate = taxRate
-    this.reparability_index_grade = reparability_index_grade
-    this.reparability_index_mandatory = reparability_index_mandatory
-    this.reparability_index_criteria_grid = reparability_index_criteria_grid
+    this.reparability_index_grade = reparabilityIndexGrade
+    this.reparability_index_mandatory = reparabilityIndexMandatory
+    this.reparability_index_criteria_grid = reparabilityIndexCriteriaGrid
     this.depth = depth
     this.width = width
     this.height = height
     this.weight = weight
-    this.short_description = short_description
-    this.long_description = long_description
-    this.images = []
-    if (images != ""){
-      this.images.push(images)
-    } 
-    this.selling_points = []
-    if (selling_points != ""){
-      this.selling_points.push(selling_points)
-    } 
+    this.short_description = shortDescription
+    this.long_description = longDescription
+    this.images = imagesList 
+    this.selling_points = sellingPointsList
     this.features = features
     this.specificities = specificities
     this.pictograms = pictograms
     this.warranty = warranty
-    this.videos = []
-    if (videos != ""){
-      this.videos.push(videos)
-    }
+    this.videos = videosList
     this.packaging = packaging
-    this.size_guide = size_guide
-
-    
-    this.bundle_composition = []
-    if (bundleComposition.length > 0){
-      for (var h = 0; h < bundleComposition.length; ++h) {
-        this.bundle_composition.push(bundleComposition[h])
-      }
+    this.size_guide = sizeGuide
+    if(bundleCompositionList.length > 0){
+      this.bundle_composition = bundleCompositionList
     }
-    if(default_variant_ean13 != ""){
-      this.default_variant_ean13 = default_variant_ean13
-    }  
-    this.variant_attributes = []
-    for (var i = 0; i < variantAttributes.length; ++i) {
-      if (!isObjEmpty(variantAttributes[i])){
-        this.variant_attributes.push(variantAttributes[i])
-      }
-     
-    } 
+    else{this.bundle_composition = []}
 
-   }
-   
- }
+    // Ne pas renvoyer l'objet s'il est null
+    if (defaultVariantEan13 != ""){
+      this.default_variant_ean13 = defaultVariantEan13
+    }
+    
+    if(variantAttributesList.length > 0){
+      this.variant_attributes = variantAttributesList
+    }
+    else{this.variant_attributes = []}
 
- class Sale {
-   constructor(name, dateStart, dateEnd, idRootCategory, idSalesforce, idPrestashop, idMatrix) {
-     this.sale_l10n = []
-     this.sale_l10n.push({ iso_lang_code: "fr", name: name})
-     this.date_start = dateStart
-     this.date_end = dateEnd
-     this.id_root_category = idRootCategory
-     this.id_sale = idSalesforce
-     this.id_sale_prestashop = idPrestashop
-     this.id_sale_matrix = idMatrix
+  }
+  
+}
+
+class Sale {
+  constructor(name, dateStart, dateEnd, idRootCategory, idSalesforce, idPrestashop, idMatrix) {
+    this.sale_l10n = []
+    this.sale_l10n.push({ iso_lang_code: "fr", name: name })
+    this.date_start = dateStart
+    this.date_end = dateEnd
+    this.id_root_category = idRootCategory
+    this.id_sale = idSalesforce
+    this.id_sale_prestashop = idPrestashop
+    this.id_sale_matrix = idMatrix
   }
 }
 
@@ -153,6 +131,6 @@ class CatalogItem {
   constructor(productName, ean) {
     this.catalog_item_l10n = []
     this.catalog_item_l10n.push({ name: productName, iso_lang_code: "fr" })
-    this.ean13 =  ean
+    this.ean13 = ean
   }
 }
